@@ -4,7 +4,7 @@
   "description": "Foo listening music and enjoy",
   "main": "index.js",
   "scripts": {
-    "startApp": "node -r dotenv/config indexApp/app.js",
+    "start": "node -r dotenv/config indexApp/app.js",
     "deployCommand": "node -r dotenv/config deployCommad/deployCommand.js"
   },
   "author": "NikEvs",
