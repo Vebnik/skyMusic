@@ -1,0 +1,25 @@
+{
+  "name": "skymusic",
+  "version": "1.0.0",
+  "description": "Foo listening music and enjoy",
+  "main": "index.js",
+  "scripts": {
+    "startApp": "node -r dotenv/config indexApp/app.js",
+    "deployCommand": "node -r dotenv/config deployCommad/deployCommand.js"
+  },
+  "author": "NikEvs",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/builders": "^0.12.0",
+    "@discordjs/opus": "^0.7.0",
+    "@discordjs/rest": "^0.3.0",
+    "discord-api-types": "^0.31.0",
+    "discord.js": "^13.6.0",
+    "distube": "^3.3.3",
+    "dotenv": "^16.0.0",
+    "ffmpeg": "^0.0.4",
+    "node-fetch": "^2.6.7",
+    "tweetnacl": "^1.0.3",
+    "ytdl-core": "^4.11.0"
+  }
+}
