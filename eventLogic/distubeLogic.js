@@ -63,10 +63,10 @@ function SongManage () {
 		getSongInfo(inter)
 			.then(async song => {
 				await queue.addToQueue(song)
-				await inter.editReply({content: '```fix\n'+`Add to queue: ${song.name}`+'```', ephemeral: true})
+				await inter.editReply({content: (`Add to queue: ${song.name}`).info(), ephemeral: true})
 			})
 			.catch(async err => {
-				await inter.editReply({content: '```fix\n'+`Check URL MAN`+'```', ephemeral: true})
+				await inter.editReply({content: (`Check URL MAN`).info(), ephemeral: true})
 				console.error(err)
 			})
 	}
@@ -74,17 +74,17 @@ function SongManage () {
 	this.skipSong = (inter) => {
 		let pos = inter?.options?._hoistedOptions[0]?.value
 		queue.jump(pos || 1).catch(err => console.log(err))
-		inter.reply({content: '```fix\n'+`Skipped song\n`+'```', ephemeral: true})
+		inter.reply({content: (`Skipped song`).info(), ephemeral: true})
 	}
 
 	this.pauseResumeSong = (inter) => {
 		const msg = inter.member?.voice?.channel
 		if (!dist.isPaused(msg)){
 			dist.pause(msg)
-			inter.reply({content: '```fix\nPaused\n```'})
+			inter.reply({content: ('Paused').info()})
 		} else {
 			dist.resume(msg)
-			inter.reply({content: '```fix\nResume\n```'})
+			inter.reply({content: ('Resume').info()})
 		}
 	}
 
@@ -99,7 +99,7 @@ function SongManage () {
 	this.testCommand = async (inter) => {
 		await inter.deferReply({ephemeral: true})
 		queue.songs.forEach(el => { console.log(el.name) })
-		await inter.editReply({content: '```fix\n'+`Sons in queue: ${queue.songs.length}\n`+'```', ephemeral: true})
+		await inter.editReply({content: (`Sons in queue: ${queue.songs.length}`).info(), ephemeral: true})
 	}
 }
 
