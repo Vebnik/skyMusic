@@ -15,7 +15,7 @@ function patEmbed (type, content) {
 	}
 }
 
-// edit proto
+// edit proto from fast edit msg string !use all project
 String.prototype.info = function () { return '```fix\n'+`${this}\n`+'```' }
 String.prototype.infoPy = function () { return '```py\n'+`${this}\n`+'```' }
 String.prototype.normalize = function () { return this.replaceAll(`'`, '') }
