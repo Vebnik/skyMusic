@@ -1,5 +1,5 @@
 const { DisTube, Song} = require('distube')
-const { patEmbed } = require('../msgDecorators/embedsEtc.js')
+const { patEmbed, msgPattern } = require('../msgDecorators/embedsEtc.js')
 const ytdl = require('ytdl-core')
 
 // distube object
@@ -23,7 +23,7 @@ function GetSong (inter, client) {
 
 	this.playSong = async (inter) => {
 		await inter.deferReply({ephemeral: true})
-		if (!queue){
+		if (!queue?.songs.length){
 			getSongInfo(inter)
 				.then(async song => {
 					const msg = inter.member?.voice?.channel
@@ -32,11 +32,11 @@ function GetSong (inter, client) {
 					return song
 				})
 				.then(async song => {
-					await inter.editReply({content: '```fix\n'+`Playing: ${song.name}\n`+'```', ephemeral: true})
+					await inter.editReply({content: (`Playing: ${song.name}`).info(), ephemeral: true})
 				})
 				.catch(err => console.error(err))
 		} else {
-			await inter.editReply({content: '```fix\n'+`please use add\n`+'```', ephemeral: true})
+			await inter.editReply({content: ('Pls use /add').info(), ephemeral: true})
 		}
 	}
 
@@ -55,7 +55,7 @@ function SongManage () {
 		const msg = inter.member?.voice?.channel
 		dist.setRepeatMode(msg, mode)
 
-		await inter.editReply({content: mode === 0 ? '```diff\n'+'-Repeat is disabled\n'+'```' : '```diff\n'+'-Repeat is on\n'+'```', ephemeral: true})
+		await inter.editReply({content: mode === 0 ? ('Repeat is disabled').info() : ('Repeat is on').info(), ephemeral: true})
 	}
 
 	this.addSong = (inter) => {
@@ -65,7 +65,10 @@ function SongManage () {
 				await queue.addToQueue(song)
 				await inter.editReply({content: '```fix\n'+`Add to queue: ${song.name}`+'```', ephemeral: true})
 			})
-			.catch(err => console.error(err))
+			.catch(async err => {
+				await inter.editReply({content: '```fix\n'+`Check URL MAN`+'```', ephemeral: true})
+				console.error(err)
+			})
 	}
 
 	this.skipSong = (inter) => {

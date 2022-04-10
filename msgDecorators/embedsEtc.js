@@ -16,4 +16,9 @@ function patEmbed (type, content) {
 	}
 }
 
+// edit proto
+String.prototype.info = function () {
+	return '```fix\n'+`${this}\n`+'```'
+}
+
 module.exports = { patEmbed }
