@@ -6,6 +6,7 @@ const ytdl = require('ytdl-core')
 let queue
 let dist
 
+
 async function getSongInfo (inter) {
 	const url = inter.options._hoistedOptions[0].value
 	let song
@@ -58,17 +59,22 @@ function SongManage () {
 		await inter.editReply({content: mode === 0 ? ('Repeat is disabled').info() : ('Repeat is on').info(), ephemeral: true})
 	}
 
-	this.addSong = (inter) => {
-		inter.deferReply({ephemeral: true})
-		getSongInfo(inter)
-			.then(async song => {
-				await queue.addToQueue(song)
-				await inter.editReply({content: (`Add to queue: ${song.name}`).info(), ephemeral: true})
-			})
-			.catch(async err => {
-				await inter.editReply({content: (`Check URL MAN`).info(), ephemeral: true})
-				console.error(err)
-			})
+	this.addSong = async (inter) => {
+		await inter.deferReply({ephemeral: true})
+		if (queue){
+			getSongInfo(inter)
+				.then(async song => {
+					await queue.addToQueue(song)
+					await inter.editReply({content: (`Add to queue: ${song.name}`).info(), ephemeral: true})
+				})
+				.catch(async err => {
+					await inter.editReply({content: (`Check URL MAN`).info(), ephemeral: true})
+					console.error(err)
+				})
+		} else {
+			await inter.editReply({content: (`Empty queue`).info(), ephemeral: true})
+		}
+
 	}
 
 	this.skipSong = (inter) => {

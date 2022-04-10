@@ -7,18 +7,17 @@ function patEmbed (type, content) {
 	switch (type) {
 
 		case 'list':
-			if (!content.length) return embed.addField('List Song', '```fix\nEmpty queue\n```')
-			let list = content.map((el, index) => `${index}: ${el.name}`).join('\n')
-			console.log(list)
-			return embed.addField('List Song', '```css\n'+list+'\n'+'```')
+			if (!content.length) return embed.addField('List Song', ('Empty queue').info())
+			let list = content.map((el, index) => `${index}: ${el.name.normalize()} || Duration: ${(el.duration/60).toFixed(2)} min`).join('\n')
+			return embed.addField('List Song', list.infoPy())
 		break
 
 	}
 }
 
 // edit proto
-String.prototype.info = function () {
-	return '```fix\n'+`${this}\n`+'```'
-}
+String.prototype.info = function () { return '```fix\n'+`${this}\n`+'```' }
+String.prototype.infoPy = function () { return '```py\n'+`${this}\n`+'```' }
+String.prototype.normalize = function () { return this.replaceAll(`'`, '') }
 
 module.exports = { patEmbed }
