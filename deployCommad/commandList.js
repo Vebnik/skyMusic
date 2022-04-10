@@ -22,7 +22,7 @@ const prod = [
 				.setDescription('URL song => https://youtu.be/XXXXXXXXXX')
 				.setRequired(true)
 		}),
-	new SlashCommandBuilder().setName('pause_resume').setDescription('Pause/Resume song'),
+	new SlashCommandBuilder().setName('pause').setDescription('Pause/Resume song'),
 	new SlashCommandBuilder().setName('skip').setDescription('Skip current song to next / position')
 		.addIntegerOption(opt => {
 			return opt.setName('position')

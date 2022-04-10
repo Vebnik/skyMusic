@@ -23,18 +23,21 @@ function GetSong (inter, client) {
 
 	this.playSong = async (inter) => {
 		await inter.deferReply({ephemeral: true})
-
-		getSongInfo(inter)
-			.then(async song => {
-				const msg = inter.member?.voice?.channel
-				await dist.play(msg, song)
-				queue = await dist.getQueue(msg)
-				return song
-			})
-			.then(async song => {
-				await inter.editReply({content: '```fix\n'+`Playing: ${song.name}\n`+'```', ephemeral: true})
-			})
-			.catch(err => console.error(err))
+		if (!queue){
+			getSongInfo(inter)
+				.then(async song => {
+					const msg = inter.member?.voice?.channel
+					await dist.play(msg, song)
+					queue = await dist.getQueue(msg)
+					return song
+				})
+				.then(async song => {
+					await inter.editReply({content: '```fix\n'+`Playing: ${song.name}\n`+'```', ephemeral: true})
+				})
+				.catch(err => console.error(err))
+		} else {
+			await inter.editReply({content: '```fix\n'+`please use add\n`+'```', ephemeral: true})
+		}
 	}
 
 	dist.on('finishSong', async (queue, song) => {

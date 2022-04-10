@@ -33,7 +33,7 @@ function CreateApp () {
 
 				case 'pause':
 					new SongManage()
-						.pauseSong(inter)
+						.pauseResumeSong(inter)
 				break
 
 				case 'skip':
