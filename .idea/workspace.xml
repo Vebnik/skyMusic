@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e07ea9a5-9228-4a4d-a100-989951f4a76d" name="Changes" comment="string normalize" />
+    <list default="true" id="e07ea9a5-9228-4a4d-a100-989951f4a76d" name="Changes" comment="string normalize">
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eventLogic/mainAppMusic.js" beforeDir="false" afterPath="$PROJECT_DIR$/eventLogic/mainAppMusic.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -95,7 +98,7 @@
       <workItem from="1649332883296" duration="58055000" />
       <workItem from="1649863406836" duration="1812000" />
       <workItem from="1649873894867" duration="6293000" />
-      <workItem from="1650874810315" duration="29607000" />
+      <workItem from="1650874810315" duration="29839000" />
     </task>
     <task id="LOCAL-00001" summary="edit pkg">
       <created>1649497358587</created>

@@ -65,4 +65,4 @@ function PlayManual () {
 }
 
 
-module.exports = { PlayManual }
+module.exports = {PlayManual}
