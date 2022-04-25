@@ -1,5 +1,7 @@
-const {playMusic} = require('../eventLogic/commandLogic.js')
 const {SongManage} = require('../eventLogic/distubeLogic.js')
+const {PlayManual} = require('./mainAppMusic')
+const music = new PlayManual()
+
 
 function CreateApp () {
 
@@ -17,8 +19,14 @@ function CreateApp () {
 			switch (command) {
 
 				case 'play':
-					playMusic(client, inter)
+					music.start(inter, client)
+						.catch(err => console.log(err))
 				break
+
+				case 'pause':
+					music.destroy(inter)
+						.catch(err => console.log(err))
+					break
 
 				case 'repeat':
 					new SongManage()
@@ -29,11 +37,7 @@ function CreateApp () {
 				case 'add':
 					new SongManage()
 						.addSong(inter)
-				break
-
-				case 'pause':
-					new SongManage()
-						.pauseResumeSong(inter)
+						.catch(err => console.error(err))
 				break
 
 				case 'skip':
@@ -49,6 +53,7 @@ function CreateApp () {
 				case 'test':
 					new SongManage()
 						.testCommand(inter)
+						.catch(err => console.error(err))
 				break
 			}
 		})
@@ -60,5 +65,6 @@ function CreateApp () {
 		})
 	}
 }
+
 
 module.exports = {CreateApp}
