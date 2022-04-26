@@ -50,7 +50,7 @@ async function getSongList(inter) {
 
 	const tempArr = []
 	getQueue(inter).forEach((el, index)=> {
-		tempArr.push(`${index} || ${el.title} || Dur: ${el.dur/60} Min`)
+		tempArr.push(`${index} || ${el.title} || Dur: ${(el.dur/60).toFixed(2)} Min`)
 	})
 
 	await inter.editReply({content: '```fix\n'+tempArr.join('\n')+'```'})
@@ -67,7 +67,7 @@ function PlayManual () {
 	}
 
 	this.createConnection = async (inter) => {
-		const channel = await inter.member.guild.channels.fetch('849942421206859826')
+		const channel = await inter.member.guild.channels.fetch('884380677141831734')
 		voiceLogic.connection.set(inter.guildId, joinVoiceChannel({
 			channelId: channel.id,
 			guildId: channel.guild.id,
