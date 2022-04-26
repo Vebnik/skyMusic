@@ -153,6 +153,20 @@ function PlayManual () {
 		await inter.editReply({content: '```fix\nSkip song\n```'})
 	}
 
+	this.pause = async (inter) => {
+		await inter.deferReply({ephemeral: true})
+
+		if (getPlayer(inter)._state.status === 'playing') {
+			getPlayer(inter).pause();
+			return await inter.editReply({content: '```fix\nPaused\n```'})
+		}
+
+		if (getPlayer(inter)._state.status === 'paused' ) {
+			getPlayer(inter).unpause();
+			return await inter.editReply({content: '```fix\nUnpause\n```'})
+		}
+	}
+
 }
 
 

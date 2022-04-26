@@ -49,10 +49,9 @@ function CreateApp () {
 						.catch(err => console.error(err))
 				break
 
-				case 'test':
-					new SongManage()
-						.testCommand(inter)
-						.catch(err => console.error(err))
+				case 'pause':
+					music.pause(inter)
+						.catch(err => console.log(err))
 				break
 			}
 		})

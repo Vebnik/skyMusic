@@ -61,7 +61,14 @@ const testing = [
 				.setRequired(true)
 		}),
 	new SlashCommandBuilder().setName('list').setDescription('Get queue list'),
-	new SlashCommandBuilder().setName('test').setDescription('Testing'),
+	new SlashCommandBuilder().setName('pause').setDescription('pause \\ unpause')
+		.addIntegerOption(opt => {
+			return opt.setName('duration')
+				.setRequired(false)
+				.setDescription('Add duration pause in sec.')
+				.setMinValue(0)
+				.setMaxValue(300)
+		}),
 ]
 
 module.exports = {prod, testing}
