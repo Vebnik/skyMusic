@@ -50,7 +50,7 @@ async function getSongList(inter) {
 
 	const tempArr = []
 	getQueue(inter).forEach((el, index)=> {
-		tempArr.push(`${index} || ${el.title}`)
+		tempArr.push(`${index} || ${el.title} || Dur: ${el.dur/60} Min`)
 	})
 
 	await inter.editReply({content: '```fix\n'+tempArr.join('\n')+'```'})
@@ -91,6 +91,7 @@ function PlayManual () {
 
 		await getConnection(inter).destroy()
 		await getPlayer(inter).stop()
+		getQueue(inter).length = 0
 
 		await inter.editReply({content: 'Stop all process'})
 	}
@@ -98,9 +99,15 @@ function PlayManual () {
 	this.addQueue = async (inter) => {
 		inter.deferReply({ephemeral: true})
 		console.log('songIndex: ', voiceLogic.songIndex)
+
 		const url = inter.options._hoistedOptions[0].value
 		await ytdl.getBasicInfo(`${url}`).then(async info => {
-			await getQueue(inter).push({title: info.videoDetails.title, url: info.videoDetails.video_url})
+			await getQueue(inter).push({
+				title: info.videoDetails.title,
+				url: info.videoDetails.video_url,
+				dur: info.videoDetails.lengthSeconds
+			})
+
 			await inter.editReply({content :'```fix\n'+`Add queue: ${info.videoDetails.title}\n`+'```'})
 		})
 
@@ -129,13 +136,21 @@ function PlayManual () {
 		})
 
 		getPlayer(guild).on('error', async (err) => {
-			console.log(err)
+			const nextSong = getQueue(guild)[++voiceLogic.songIndex].url
+			await getPlayer(guild).play(await getSong(nextSong))
 		})
 	}
 
 	this.skipSong = async (inter) => {
-		const song = getQueue(inter)[0].url
+		await inter.deferReply({ephemeral: true})
 
+		const position = inter.options._hoistedOptions[0].value
+
+		if (position >= getQueue(inter)?.length) return  inter.editReply({content: '```fix\nPosition not found\n```'})
+		const song = getQueue(inter)[position].url
+		getPlayer(inter).play(await getSong(song))
+
+		await inter.editReply({content: '```fix\nSkip song\n```'})
 	}
 
 }

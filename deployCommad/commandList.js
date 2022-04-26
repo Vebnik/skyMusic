@@ -53,11 +53,12 @@ const testing = [
 				.setDescription('URL song => https://youtu.be/XXXXXXXXXX')
 				.setRequired(true)
 		}),
-	new SlashCommandBuilder().setName('pause_resume').setDescription('Pause/Resume song'),
+	new SlashCommandBuilder().setName('stop').setDescription('Stop bot'),
 	new SlashCommandBuilder().setName('skip').setDescription('Skip current song to next / position')
 		.addIntegerOption(opt => {
 			return opt.setName('position')
 				.setDescription('Song positions => list')
+				.setRequired(true)
 		}),
 	new SlashCommandBuilder().setName('list').setDescription('Get queue list'),
 	new SlashCommandBuilder().setName('test').setDescription('Testing'),

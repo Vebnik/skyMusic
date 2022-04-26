@@ -23,7 +23,7 @@ function CreateApp () {
 						.catch(err => console.log(err))
 				break
 
-				case 'pause_resume':
+				case 'stop':
 					music.destroy(inter)
 						.catch(err => console.log(err))
 				break
@@ -38,15 +38,15 @@ function CreateApp () {
 						.catch(err => console.error(err))
 				break
 
+				case 'skip':
+					music.skipSong(inter)
+						.catch(err => console.error(err))
+				break
+
 				case 'repeat':
 					new SongManage()
 						.repeat(inter)
 						.catch(err => console.error(err))
-				break
-
-				case 'skip':
-					new  SongManage()
-						.skipSong(inter)
 				break
 
 				case 'test':

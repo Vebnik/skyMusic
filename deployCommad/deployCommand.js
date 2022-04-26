@@ -23,7 +23,7 @@ function CreateCommand (guild) {
 }
 
 // тут в конструктор передать ID сервера
-//let command = new CreateCommand('394072712785690624') // testing
-let command = new CreateCommand('884380677141831730')
-command.createComm(prod)
-//command.createComm(testing)
+let command = new CreateCommand('394072712785690624') // testing
+//let command = new CreateCommand('884380677141831730')
+//command.createComm(prod)
+command.createComm(testing)
