@@ -1,14 +1,21 @@
 const { joinVoiceChannel, createAudioPlayer, StreamType, createAudioResource, NoSubscriberBehavior, generateDependencyReport } = require('@discordjs/voice');
 const ytdl = require('ytdl-core-discord')
-
-console.log(generateDependencyReport())
+const ytdlExec = require('youtube-dl-exec')
 
 async function getSong (url) {
 	if (typeof url !== 'string') return false
-	console.log(await ytdl(`${url}`))
-	return createAudioResource(await ytdl(`${url}`), {inputType: StreamType.Opusm})
-}
 
+	console.log('Start exec')
+
+	const stream = ytdlExec.exec(url, {
+		o: '-',
+		q: '',
+		f: 'bestaudio[ext=webm+acodec=opus+asr=48000]/bestaudio',
+		r: '100K',
+	}, { stdio: ['ignore', 'pipe', 'ignore'] })
+
+	return createAudioResource(stream.stdout)
+}
 
 function PlayManual () {
 
@@ -16,12 +23,12 @@ function PlayManual () {
 
 	const voiceLogic = {
 		connection: null,
-		player: null
+		player: null,
+		songIndex: 0,
 	}
 
 	this.createConnection = async (inter) => {
 		const channel = await inter.member.guild.channels.fetch('849942421206859826')
-
 		voiceLogic.connection = joinVoiceChannel({
 			channelId: channel.id,
 			guildId: channel.guild.id,
@@ -48,19 +55,21 @@ function PlayManual () {
 		await voiceLogic.connection.subscribe(voiceLogic.player)
 	}
 
-	this.addQueue = (inter) => {
+	this.addQueue = async (inter) => {
 		const url = inter.options._hoistedOptions[0].value
-		ytdl.getBasicInfo(`${url}`).then(info => {
+		await ytdl.getBasicInfo(`${url}`).then(info => {
 			queue.set(inter.guildId, [ {title: info.videoDetails.title, url: info.videoDetails.video_url} ])
 		})
+
+		if (queue.get(inter.guildId).length > 1) voiceLogic.player++
 	}
 
 	this.play = async (inter) => {
 		const url = inter.options._hoistedOptions[0].value
-		this.addQueue(inter)
+		voiceLogic.player.play(await getSong(url))
 
-		await voiceLogic.player.play(await getSong(url), {type: 'opus'})
-		await inter.editReply({content :`Playing: ${queue.get(inter.guildId)[0].title}`})
+		await this.addQueue(inter)
+		await inter.editReply({content :`Playing now: ${queue.get(inter.guildId)[voiceLogic.songIndex].title}`})
 	}
 }
 
