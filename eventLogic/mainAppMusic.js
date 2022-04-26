@@ -2,6 +2,15 @@ const { joinVoiceChannel, createAudioPlayer, StreamType, createAudioResource, No
 const ytdl = require('ytdl-core-discord')
 const ytdlExec = require('youtube-dl-exec')
 
+const voiceLogic = {
+	connection: new Map(),
+	player: new Map(),
+	songIndex: 0,
+}
+
+const queue = new Map()
+
+// Utils
 async function getSong (url) {
 	if (typeof url !== 'string') return false
 
@@ -17,42 +26,61 @@ async function getSong (url) {
 	return createAudioResource(stream.stdout)
 }
 
+function getPlayer (inter) {
+	if (voiceLogic.player.get(inter.guildId)) return voiceLogic.player.get(inter.guildId)
+	return voiceLogic.player.set(inter.guildId, createAudioPlayer( {debug: true, behaviors: {maxMissedFrames: 100, noSubscriber: NoSubscriberBehavior.Pause}}) )
+}
+
+function getConnection (inter) {
+	return voiceLogic.connection.get(inter.guildId)
+}
+
+function getQueue(inter) {
+	return queue.get(inter.guildId)
+}
+
+async function getSongList(inter) {
+	getQueue(inter)
+}
+
+// Mail logic
 function PlayManual () {
-
-	const queue = new Map()
-
-	const voiceLogic = {
-		connection: null,
-		player: null,
-		songIndex: 0,
-	}
-
-	this.createConnection = async (inter) => {
-		const channel = await inter.member.guild.channels.fetch('849942421206859826')
-		voiceLogic.connection = joinVoiceChannel({
-			channelId: channel.id,
-			guildId: channel.guild.id,
-			adapterCreator: channel.guild.voiceAdapterCreator,
-		})
-	}
 
 	this.start = async (inter, client) => {
 		await inter.deferReply({ephemeral: true})
 
-		if (voiceLogic.player && voiceLogic.connection) return this.play(inter)
 		await this.createConnection(inter).catch(err => console.log(err))
 		await this.createPlayer(inter).catch(err => console.log(err))
 		await this.play(inter).catch(err => console.log(err))
 	}
 
-	this.destroy = async (inter) => {
-		await inter.deferReply({ephemeral: true})
-		await voiceLogic.connection.destroy()
+	this.createConnection = async (inter) => {
+		const channel = await inter.member.guild.channels.fetch('849942421206859826')
+		voiceLogic.connection.set(inter.guildId, joinVoiceChannel({
+			channelId: channel.id,
+			guildId: channel.guild.id,
+			adapterCreator: channel.guild.voiceAdapterCreator,
+		}))
 	}
 
 	this.createPlayer = async (inter) => {
-		voiceLogic.player = createAudioPlayer({debug: true, behaviors: {maxMissedFrames: 100, noSubscriber: NoSubscriberBehavior.Pause}})
-		await voiceLogic.connection.subscribe(voiceLogic.player)
+		await getPlayer(inter)
+		await getConnection(inter).subscribe(getPlayer(inter))
+	}
+
+	this.play = async (inter) => {
+		const url = inter.options._hoistedOptions[0].value
+
+		await getPlayer(inter).play(await getSong(url))
+		await this.addQueue(inter)
+		await inter.editReply({content :`Playing now: ${getQueue(inter)[voiceLogic.songIndex].title}`})
+	}
+
+	this.destroy = async (inter) => {
+		await inter.deferReply({ephemeral: true})
+		await voiceLogic.connection.get(inter.guildId).destroy()
+		await queue =
+		await inter.editReply({content: 'Stop all process'})
 	}
 
 	this.addQueue = async (inter) => {
@@ -60,18 +88,12 @@ function PlayManual () {
 		await ytdl.getBasicInfo(`${url}`).then(info => {
 			queue.set(inter.guildId, [ {title: info.videoDetails.title, url: info.videoDetails.video_url} ])
 		})
+		console.log('add')
 
-		if (queue.get(inter.guildId).length > 1) voiceLogic.player++
+		if (getQueue(inter).length > 1) voiceLogic.player++
 	}
 
-	this.play = async (inter) => {
-		const url = inter.options._hoistedOptions[0].value
-		voiceLogic.player.play(await getSong(url))
-
-		await this.addQueue(inter)
-		await inter.editReply({content :`Playing now: ${queue.get(inter.guildId)[voiceLogic.songIndex].title}`})
-	}
 }
 
 
-module.exports = {PlayManual}
+module.exports = {PlayManual, getSongList}

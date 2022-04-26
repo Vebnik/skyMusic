@@ -1,5 +1,5 @@
 const {SongManage} = require('../eventLogic/distubeLogic.js')
-const {PlayManual} = require('./mainAppMusic')
+const {PlayManual, getSongList} = require('./mainAppMusic')
 const music = new PlayManual()
 
 
@@ -23,10 +23,21 @@ function CreateApp () {
 						.catch(err => console.log(err))
 				break
 
-				case 'pause':
+				case 'pause_resume':
 					music.destroy(inter)
 						.catch(err => console.log(err))
-					break
+				break
+
+				case 'add':
+					new SongManage()
+						music.addQueue(inter)
+						.catch(err => console.error(err))
+				break
+
+				case 'list':
+					getSongList(inter)
+						.catch(err => console.error(err))
+				break
 
 				case 'repeat':
 					new SongManage()
@@ -34,20 +45,9 @@ function CreateApp () {
 						.catch(err => console.error(err))
 				break
 
-				case 'add':
-					new SongManage()
-						.addSong(inter)
-						.catch(err => console.error(err))
-				break
-
 				case 'skip':
 					new  SongManage()
 						.skipSong(inter)
-				break
-
-				case 'list':
-					new SongManage()
-						.listSong(inter)
 				break
 
 				case 'test':
