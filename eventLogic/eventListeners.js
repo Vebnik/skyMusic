@@ -29,8 +29,7 @@ function CreateApp () {
 				break
 
 				case 'add':
-					new SongManage()
-						music.addQueue(inter)
+					music.addQueue(inter)
 						.catch(err => console.error(err))
 				break
 

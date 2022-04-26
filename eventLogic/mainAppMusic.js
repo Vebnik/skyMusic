@@ -1,4 +1,4 @@
-const { joinVoiceChannel, createAudioPlayer, StreamType, createAudioResource, NoSubscriberBehavior, generateDependencyReport } = require('@discordjs/voice');
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, NoSubscriberBehavior, AudioPlayerStatus } = require('@discordjs/voice');
 const ytdl = require('ytdl-core-discord')
 const ytdlExec = require('youtube-dl-exec')
 
@@ -28,7 +28,9 @@ async function getSong (url) {
 
 function getPlayer (inter) {
 	if (voiceLogic.player.get(inter.guildId)) return voiceLogic.player.get(inter.guildId)
-	return voiceLogic.player.set(inter.guildId, createAudioPlayer( {debug: true, behaviors: {maxMissedFrames: 100, noSubscriber: NoSubscriberBehavior.Pause}}) )
+
+	voiceLogic.player.set(inter.guildId, createAudioPlayer( {debug: true, behaviors: {maxMissedFrames: 100, noSubscriber: NoSubscriberBehavior.Pause}}) )
+	return voiceLogic.player.get(inter.guildId)
 }
 
 function getConnection (inter) {
@@ -36,22 +38,32 @@ function getConnection (inter) {
 }
 
 function getQueue(inter) {
+	if (queue.get(inter.guildId)) return queue.get(inter.guildId)
+
+	queue.set(inter.guildId, [])
 	return queue.get(inter.guildId)
 }
 
 async function getSongList(inter) {
-	getQueue(inter)
+	await inter.deferReply({ephemeral: true})
+	if (!await getQueue(inter).length) return await inter.editReply({content: 'Queue empty'})
+
+	const tempArr = []
+	getQueue(inter).forEach((el, index)=> {
+		tempArr.push(`${index} || ${el.title}`)
+	})
+
+	await inter.editReply({content: '```fix\n'+tempArr.join('\n')+'```'})
 }
 
 // Mail logic
 function PlayManual () {
 
 	this.start = async (inter, client) => {
-		await inter.deferReply({ephemeral: true})
-
 		await this.createConnection(inter).catch(err => console.log(err))
 		await this.createPlayer(inter).catch(err => console.log(err))
 		await this.play(inter).catch(err => console.log(err))
+		await this.playerEvHandler(inter).catch(err => console.log(err))
 	}
 
 	this.createConnection = async (inter) => {
@@ -64,33 +76,66 @@ function PlayManual () {
 	}
 
 	this.createPlayer = async (inter) => {
-		await getPlayer(inter)
 		await getConnection(inter).subscribe(getPlayer(inter))
 	}
 
 	this.play = async (inter) => {
-		const url = inter.options._hoistedOptions[0].value
-
+		console.log('songIndex: ', voiceLogic.songIndex)
+		const url = inter?.options?._hoistedOptions[0]?.value || inter
 		await getPlayer(inter).play(await getSong(url))
 		await this.addQueue(inter)
-		await inter.editReply({content :`Playing now: ${getQueue(inter)[voiceLogic.songIndex].title}`})
 	}
 
 	this.destroy = async (inter) => {
 		await inter.deferReply({ephemeral: true})
-		await voiceLogic.connection.get(inter.guildId).destroy()
-		await queue =
+
+		await getConnection(inter).destroy()
+		await getPlayer(inter).stop()
+
 		await inter.editReply({content: 'Stop all process'})
 	}
 
 	this.addQueue = async (inter) => {
+		inter.deferReply({ephemeral: true})
+		console.log('songIndex: ', voiceLogic.songIndex)
 		const url = inter.options._hoistedOptions[0].value
-		await ytdl.getBasicInfo(`${url}`).then(info => {
-			queue.set(inter.guildId, [ {title: info.videoDetails.title, url: info.videoDetails.video_url} ])
+		await ytdl.getBasicInfo(`${url}`).then(async info => {
+			await getQueue(inter).push({title: info.videoDetails.title, url: info.videoDetails.video_url})
+			await inter.editReply({content :'```fix\n'+`Add queue: ${info.videoDetails.title}\n`+'```'})
 		})
-		console.log('add')
 
-		if (getQueue(inter).length > 1) voiceLogic.player++
+		console.log('add')
+	}
+
+	this.playerEvHandler = async (inter) => {
+
+		const guild = inter
+
+		getPlayer(guild).on(AudioPlayerStatus.Idle, async () => {
+			try {
+
+				const nextSong = getQueue(guild)[++voiceLogic.songIndex].url
+				console.log('songIndex event handler: ', voiceLogic.songIndex)
+				console.log('Next song:', nextSong)
+				await getPlayer(guild).play(await getSong(nextSong))
+
+			} catch (e) {
+
+				queue.set(guild.guildId, [])
+				await getConnection(guild).destroy()
+				await getPlayer(guild).stop()
+				voiceLogic.songIndex = 0
+			}
+		})
+
+		getPlayer(guild).on('error', async (err) => {
+			console.log(err)
+		})
+	}
+
+	this.skipSong = async (inter) => {
+		const song = getQueue(inter)[0].url
+
 	}
 
 }
