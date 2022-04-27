@@ -67,7 +67,7 @@ function PlayManual () {
 	}
 
 	this.createConnection = async (inter) => {
-		const channel = await inter.member.guild.channels.fetch('884380677141831734')
+		const channel = await inter.member.guild.channels.fetch('849942421206859826')
 		voiceLogic.connection.set(inter.guildId, joinVoiceChannel({
 			channelId: channel.id,
 			guildId: channel.guild.id,
@@ -121,21 +121,16 @@ function PlayManual () {
 		getPlayer(guild).on(AudioPlayerStatus.Idle, async () => {
 			try {
 
-				const nextSong = getQueue(guild)[++voiceLogic.songIndex].url
-				console.log('songIndex event handler: ', voiceLogic.songIndex)
-				console.log('Next song:', nextSong)
-				await getPlayer(guild).play(await getSong(nextSong))
-
-			} catch (e) {
-
-				queue.set(guild.guildId, [])
-				await getConnection(guild).destroy()
-				await getPlayer(guild).stop()
-				voiceLogic.songIndex = 0
-			}
+				if (getQueue(guild).length > voiceLogic.songIndex+1) {
+					const nextSong = getQueue(guild)[++voiceLogic.songIndex].url
+					await getPlayer(guild).play(await getSong(nextSong))
+					console.log('Next song:', nextSong)
+				}
+			} catch (e) {  }
 		})
 
 		getPlayer(guild).on('error', async (err) => {
+			console.log(err)
 			const nextSong = getQueue(guild)[++voiceLogic.songIndex].url
 			await getPlayer(guild).play(await getSong(nextSong))
 		})

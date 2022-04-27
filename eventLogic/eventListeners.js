@@ -1,5 +1,6 @@
 const {SongManage} = require('../eventLogic/distubeLogic.js')
 const {PlayManual, getSongList} = require('./mainAppMusic')
+const {getFusingTg} = require('./telegramIntegrations')
 const music = new PlayManual()
 
 
@@ -7,7 +8,7 @@ function CreateApp () {
 
 	this.connect = (client) => {
 		client.login(process.env.TOKEN)
-			.then(ev => console.log(`App started: ${new Date().toString()}`))
+			.then(ev => console.log(`DiscordApp started ⏰ ${new Date().toJSON()}`))
 	}
 
 	this.listener = (client) => {
@@ -63,6 +64,9 @@ function CreateApp () {
 		})
 	}
 
+	this.tgInt = (client) => {
+		getFusingTg(client)
+	}
 }
 
 
