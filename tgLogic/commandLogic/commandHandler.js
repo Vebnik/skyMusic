@@ -18,14 +18,13 @@ function commandListen (ctx) {
 	isTrueChat(ctx).then(command => {
 		if (!command) return console.log('Not valid chat')
 
-		console.log(command)
-
 		switch (command) {
 
 			case 'dis':
 				sendMsgDiscord(ctx, command)
 					.catch(err => console.log(err))
 			break
+
 		}
 	})
 }

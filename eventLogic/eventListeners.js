@@ -1,6 +1,7 @@
 const {SongManage} = require('../eventLogic/distubeLogic.js')
 const {PlayManual, getSongList} = require('./mainAppMusic')
 const {getFusingTg} = require('./telegramIntegrations')
+const {addEmoji, sendTg} = require('./otherLogic')
 const music = new PlayManual()
 
 
@@ -58,9 +59,8 @@ function CreateApp () {
 		})
 
 		client.on('messageCreate', msg => {
-			if (msg.author.username === 'N9kita'){
-				msg.react('🤡').catch(err => console.log(err))
-			}
+			addEmoji(msg)
+			sendTg(msg)
 		})
 	}
 

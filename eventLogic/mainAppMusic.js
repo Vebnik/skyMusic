@@ -56,7 +56,7 @@ async function getSongList(inter) {
 	await inter.editReply({content: '```fix\n'+tempArr.join('\n')+'```'})
 }
 
-// Mail logic
+// Main logic
 function PlayManual () {
 
 	this.start = async (inter, client) => {

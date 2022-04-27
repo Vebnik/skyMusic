@@ -17,5 +17,6 @@ app.listener(client)
 app.connect(client)
 
 // Tg integrations
-tgApp.login()
+tgApp.DiscConnect()
 tgApp.eventListen()
+tgApp.login()

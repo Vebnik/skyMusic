@@ -1,5 +1,6 @@
 const { eventHandler } = require('./eventHendler/evHandler')
 const { commandListen } = require('./commandLogic/commandHandler')
+const { getFusingDisc } = require('../eventLogic/telegramIntegrations')
 const commandList = require('./commandLogic/commandList')
 
 function StartApp (bot) {
@@ -11,8 +12,11 @@ function StartApp (bot) {
 
 	this.eventListen = () => {
 		bot.command(commandList, ctx => { commandListen(ctx) })
-
 		bot.on('message', ctx => { eventHandler(ctx) })
+	}
+
+	this.DiscConnect = () => {
+		getFusingDisc(bot)
 	}
 }
 
